@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+  <title>Is Petr working today?</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="ii.png" />
+  <style>
+    @font-face {
+      font-family: 'droid_sans';
+      src: url('DroidSans-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body {
+      font-family: 'droid_sans', sans-serif;
+      font-size: 16px;
+    }
+    .page-wrapper { width: 900px; margin: 0 auto; text-align: center }
+    h3 { font-size: 20px; font-weight: normal }
+    .status-section h3 {
+      color: #888;
+      font-weight: normal;
+      font-size: 20px;
+      margin: 40px;
+    }
+    .status-section h2 {
+      font-weight: normal;
+      font-size: 20px;
+      margin: 40px;
+    }
+    .status-section h1 {
+      font-size: 70px;
+      margin: 70px;
+      height: 95px;
+    }
+    .calendar-section .calendar {
+      display: inline-block;
+      width: 270px;
+      height: 240px;
+    }
+    .calendar table {
+      margin: 0 auto;
+    }
+    .calendar table td {
+      padding: 8px 10px 8px;
+      border:2px solid white;
+      border-radius: 10px;
+      width: 20px;
+    }
+    .active.calendar td {
+      cursor: default;
+    }
+    .calendar.next, .calendar.previous {
+      cursor: pointer;
+      opacity: 0.3;
+    }
+    .calendar-empty {
+      width: 270px; 
+      height: 270px;
+      cursor: default;
+    }
+    .calendar th {
+      color: #ccc;
+      font-weight: bold;
+    }
+    .calendar .filler-day {
+      color: #ccc;
+    }
+    .calendar h3 {
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+    }
+    .calendar .today {
+      border:4px solid black;
+      padding: 8px 8px 6px;
+      font-weight: bold;
+    }
+    .calendar .highlight {
+      opacity: 0.7;
+      font-weight: bold;
+    }
+    .details-section {
+      width: 600px;
+      margin: 0 auto;
+    }
+    .details-section .active-description { 
+      height: 2em;
+      margin: 20px 0 30px;
+      font-size: 16px;
+    }
+    .details-section {
+      width: 800px; margin: 50px auto;
+    }
+    .details-section .stats, 
+    .details-section .events {
+      width: 250px;
+      display: inline-block;
+      vertical-align: top;
+      padding: 0 22px;
+    }
+    .stats p {
+      text-align: left;
+      margin: 0; padding: 4px}
+    .stats p span { display: inline-block; width: 160px }
+    .stats p strong { float:right; text-align: right; font-weight:  normal }
+    .stats .deductions { border-bottom: 1px dashed  }
+    .stats .ratio { border-bottom: 3px double; border-top: 1px solid}
+    .stats .ratio strong { font-weight: bold;}
+    .details-section .events {text-align: left;}
+    .details-section .events .event {
+      padding: 7px 5px 5px;
+      line-height: 1.5;
+      margin: 5px 0;
+      border-left: 10px solid #ddd;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      cursor: default;
+    }
+    .events .event.highlight .date {color: #000;}
+    .event .date {color: #888; font-size: 13px;width: 240px;}
+
+    .calendar .DayOn, .events .DayOn.highlight,
+    .calendar .PartialDay, .events .PartialDay.highlight { background-color: rgb(53, 213, 42)}
+    .calendar .PublicHoliday, .events .PublicHoliday.highlight { background-color: rgb(120, 139, 237)}
+    .calendar .SickDay, .events .SickDay.highlight { background-color: rgb(238, 76, 58)}
+    .calendar .Vacation, .events .Vacation.highlight { background-color: rgb(242, 229, 23)}
+
+    .events .DayOn.highlight,
+    .events .PartialDay.highlight { background-color: rgba(53, 213, 42, 0.5)}
+    .events .PublicHoliday.highlight { background-color: rgba(120, 139, 237, 0.5)}
+    .events .SickDay.highlight { background-color: rgba(238, 76, 58, 0.5)}
+    .events .Vacation.highlight { background-color: rgba(242, 229, 23, 0.5)}
+    .events .DayOff.highlight { background-color: #eee; }
+    
+    .events .DayOn,
+    .events .PartialDay { border-color: rgb(53, 213, 42) !important }
+    .events .PublicHoliday { border-color: rgb(120, 139, 237) !important }
+    .events .SickDay { border-color: rgb(238, 76, 58) !important }
+    .events .Vacation { border-color: rgb(242, 229, 23) !important }
+  </style>
+</head>
+<body>
+<div id="app-container"></div>
+<script src="bundle.js"></script>
+</body>
+</html>
