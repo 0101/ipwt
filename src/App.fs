@@ -1,6 +1,5 @@
 module App.App
 
-open Browser.Dom
 open Elmish
 open Elmish.React
 open Elmish.Debug

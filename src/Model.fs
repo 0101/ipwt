@@ -11,7 +11,7 @@ let PART_TIME_RATIO = 0.6M
 let DAILY_HOURS = 8M
 let PART_TIME_DAILY_HOURS = PART_TIME_RATIO * DAILY_HOURS
 
-    
+
 let eventDates event = [for x in [0..(event.EndDate - event.StartDate).Days] -> event.StartDate.AddDays(float x).Date]    
 
 
@@ -43,10 +43,11 @@ module AllocationPolicy =
                     else
                         0M, dayOff date
                 remainingHours - hours, day::days )
-        Debug.Assert(hoursLeft <= 0M, "Some hours are left after BeginningOfMonth allocation")
+        Debug.Assert((hoursLeft = 0M), "Some hours are left after BeginningOfMonth allocation")
         days
 
-    /// Allocates the part-time working hours to Monday through Wednesday as much as possible    
+    /// Allocates the part-time working hours to Monday through Wednesday as much as possible
+    /// What doesn't fit goes to the beginning of the month
     let ThreeDaysAWeek remainingHours remainingDates =
         let hoursLeft, days, remainingDates =
             ((remainingHours, [], remainingDates), remainingDates)
@@ -81,7 +82,7 @@ let initMonth holidays (month: DateTime) =
                           if date.Month = month.Month then 
                               date, event]
     
-    // events that reduce the number of working days
+    // Events that reduce the number of working days
     let deductions = eventDates
                      |> List.choose (fun (_, e) ->
                          match e.EventType with
@@ -90,7 +91,7 @@ let initMonth holidays (month: DateTime) =
                      |> List.countBy id
     let workingDays = weekdays - (deductions |> List.sumBy snd) 
     
-    // process event days 
+    // Process event days 
     let remainingDates, remainingHours, eventDays =
         ((Set dates, partTimeHours, []), eventDates)
         ||> List.fold (fun (remainingDates, remainingHours, days) (eventDate, event) ->
@@ -105,7 +106,7 @@ let initMonth holidays (month: DateTime) =
                 Description = Some event.Description }
             remainingDates |> Set.remove eventDate, (remainingHours - hours), day::days)
 
-    // allocate working days to the remaining space according to chosen policy    
+    // Allocate working days to the remaining space according to chosen policy    
     let regularDays = AllocationPolicy.BeginningOfMonth remainingHours remainingDates
 
     // Add naturally occuring partial days to events list
@@ -118,11 +119,10 @@ let initMonth holidays (month: DateTime) =
         | _ -> None)
     
     let events = [yield! events
-                  yield! regularPartialDays] 
-        
+                  yield! regularPartialDays]
+    
     let allDays = [yield! eventDays
                    yield! regularDays] 
-    
     
     // Check that allocated working hours add up to expected number
     let checksum = allDays
@@ -139,10 +139,12 @@ let initMonth holidays (month: DateTime) =
       Deductions = deductions
       WorkingDays = workingDays }
 
+
 let initPreviousMonth holidays (date: DateTime) =
     if date.AddMonths -1 < FIRST_MONTH
     then None
     else Some (date.AddMonths -1) |> Option.map (initMonth holidays)
+
     
 let initNextMonth holidays (date: DateTime) = Some (initMonth holidays (date.AddMonths 1)) 
 
