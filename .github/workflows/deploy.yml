@@ -28,6 +28,9 @@ jobs:
         run: dotnet build --no-restore
       - name: Test
         run: dotnet test --no-build --verbosity normal test
+        
+      - name: Install Fable tool
+        run: dotnet tool restore
     
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.3.0
