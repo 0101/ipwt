@@ -1,17 +1,9 @@
 module App.Update
 
-
 open Elmish
-open Fetch
-open Fable.Core
-
-
-open System
 
 open App.Model
-
-
-    
+   
     
 let update (msg: Msg) (state: State) =
     
@@ -42,4 +34,3 @@ let update (msg: Msg) (state: State) =
         { state with
             HighlightDates = dates
             }, Cmd.none
-        

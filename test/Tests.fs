@@ -40,6 +40,5 @@ let ``We can generate valid state for any day`` () =
         initState date |> ignore
 
 
-
 [<EntryPoint>] 
 let main _ = 0

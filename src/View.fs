@@ -48,7 +48,7 @@ let calendar dispatch highlight today active = function
         let trailingDays = Seq.initInfinite (float >> lastDay.AddDays)
                            |> Seq.skip 1
                            |> Seq.takeWhile (fun x -> x.DayOfWeek <> DayOfWeek.Monday)
-        let allDays =
+        let weeks =
             seq {
                 for day in leadingDays -> day, None
                 for day in month.Days -> day.Date, Some day
@@ -63,17 +63,9 @@ let calendar dispatch highlight today active = function
               OnMouseLeave (fun _ -> HoverDates Set.empty |> dispatch)
               if not active then OnClick (fun _ -> SwitchTo month.Date |> dispatch) ] [
             table [] [
-                thead [] [
-                    tr [] [
-                    th [] [ str "M" ]
-                    th [] [ str "T" ]
-                    th [] [ str "W" ]
-                    th [] [ str "T" ]
-                    th [] [ str "F" ]
-                    ]
-                ]
+                thead [] [ tr [] [ for c in "MTWTF" -> th [] [ str $"{c}" ] ] ]
                 tbody [] [
-                    for week in allDays -> tr [] [
+                    for week in weeks -> tr [] [
                         for day in week -> day |> dayCell active dispatch highlight today
                     ]
                 ]
