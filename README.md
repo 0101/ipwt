@@ -27,3 +27,4 @@ JS dependencies are declared in `package.json`, while `package-lock.json` is a l
 ### Webpack
 
 [Webpack](https://webpack.js.org) is a JS bundler with extensions, like a static dev server that enables hot reloading on code changes. Fable interacts with Webpack through the `fable-loader`. Configuration for Webpack is defined in the `webpack.config.js` file.
+
