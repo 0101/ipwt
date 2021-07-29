@@ -16,14 +16,17 @@ let update (msg: Msg) (state: State) =
                 let today = thisMonth.Days |> List.find (fun x -> x.Date = state.Today)
                 dayStatus today.DayType
             else state.TodayStatus
+        
         { state with
             TodayStatus = todayStatus
             Month = initMonth state.Holidays date
             PreviousMonth = initPreviousMonth state.Holidays date
             NextMonth = initNextMonth state.Holidays date
-            }, if not (state.Holidays.ContainsKey date.Year) then
-                   Holidays.Fetch date.Year
-               else Cmd.none
+            }, Cmd.batch (
+                [ Some date; previousMonth date; nextMonth date ]
+                |> List.choose (function
+                   | Some date when not (state.Holidays.ContainsKey date.Year) -> Some (Holidays.Fetch date.Year)
+                   | _ -> None))
         
     | Holidays (year, events) ->
         { state with

@@ -140,13 +140,16 @@ let initMonth holidays (month: DateTime) =
       WorkingDays = workingDays }
 
 
-let initPreviousMonth holidays (date: DateTime) =
+let previousMonth (date: DateTime) = 
     if date.AddMonths -1 < FIRST_MONTH
     then None
-    else Some (date.AddMonths -1) |> Option.map (initMonth holidays)
-
+    else Some (date.AddMonths -1)
     
-let initNextMonth holidays (date: DateTime) = Some (initMonth holidays (date.AddMonths 1)) 
+let nextMonth (date: DateTime) = Some (date.AddMonths 1)
+
+let initPreviousMonth holidays = previousMonth >> Option.map (initMonth holidays)
+
+let initNextMonth holidays = nextMonth >> Option.map (initMonth holidays) 
 
 
 let initState (today: DateTime) =
