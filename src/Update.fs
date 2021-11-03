@@ -21,19 +21,17 @@ let update (msg: Msg) (state: State) =
             TodayStatus = todayStatus
             Month = initMonth state.Holidays date
             PreviousMonth = initPreviousMonth state.Holidays date
-            NextMonth = initNextMonth state.Holidays date
-            }, Cmd.batch (
-                [ Some date; previousMonth date; nextMonth date ]
-                |> List.choose (function
-                   | Some date when not (state.Holidays.ContainsKey date.Year) -> Some (Holidays.Fetch date.Year)
-                   | _ -> None))
+            NextMonth = initNextMonth state.Holidays date }, 
+        Cmd.batch (
+            [ Some date; previousMonth date; nextMonth date ]
+            |> List.choose (function
+               | Some date when not (state.Holidays.ContainsKey date.Year) -> Some (Holidays.Fetch date.Year)
+               | _ -> None))
         
     | Holidays (year, events) ->
-        { state with
-            Holidays = state.Holidays.Add (year, events)
-            }, Cmd.ofMsg (SwitchTo state.Month.Date)
+        { state with Holidays = state.Holidays.Add (year, events) }, 
+        Cmd.ofMsg (SwitchTo state.Month.Date)
             
-    | HoverDates dates ->
-        { state with
-            HighlightDates = dates
-            }, Cmd.none
+    | HighlightDates dates ->
+        { state with HighlightDates = dates }, 
+        Cmd.none

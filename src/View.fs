@@ -23,7 +23,8 @@ let dayCell active dispatch highlightDates today (date: DateTime, day: Day optio
     let isToday = if date.Date = today then " today" else ""
     let highlight = if highlightDates |> Set.contains date  then " highlight" else ""
     let partialStyle = match day with
-                       | Some {DayType = PartialDay percentage} ->
+                       | Some {DayType = PartialDay hours} ->
+                           let percentage = hours / 8M
                            let lightness = 100M - 50M * percentage
                            [BackgroundColor ("hsl(116, 67%" + $", %.0f{lightness}" + "%)")]
                        | _ -> []
@@ -34,7 +35,7 @@ let dayCell active dispatch highlightDates today (date: DateTime, day: Day optio
         ClassName $"{day.DayType}{isToday}{highlight}"
         Style partialStyle 
         Title ((day.DayType |> dayStatus) + (day.Description |> Option.map (sprintf ", %s") |> Or ""))
-        if active then OnMouseOver (fun _ -> HoverDates (Set [day.Date]) |> dispatch) ] [ str $"{date.Day}" ]
+        if active then OnMouseOver (fun _ -> HighlightDates (Set [day.Date]) |> dispatch) ] [ str $"{date.Day}" ]
 
 
 let calendar dispatch highlight today active = function
@@ -60,7 +61,7 @@ let calendar dispatch highlight today active = function
             |> Seq.where (Array.exists (snd >> Option.isSome))
             
         div [ ClassName "calendar-month"
-              OnMouseLeave (fun _ -> HoverDates Set.empty |> dispatch)
+              OnMouseLeave (fun _ -> HighlightDates Set.empty |> dispatch)
               if not active then OnClick (fun _ -> SwitchTo month.Date |> dispatch) ] [
             table [] [
                 thead [] [ tr [] [ for c in "MTWTF" -> th [] [ str $"{c}" ] ] ]
@@ -112,16 +113,20 @@ let view (state : State) dispatch =
                 p [ ClassName "ratio" ] [ span [] [ str <| $"× %.0f{PART_TIME_RATIO * 100M} " + "%" ]; strong [] [ str partTimeWorkingDays ] ]
             ]
             if state.Month.Events <> [] then
-                div [ ClassName "events"; OnMouseLeave (fun _ -> HoverDates Set.empty |> dispatch) ] [
+                div [ ClassName "events"; OnMouseLeave (fun _ -> HighlightDates Set.empty |> dispatch) ] [
                     for event in state.Month.Events do
                         let highlight =
                             if state.HighlightDates |> Set.exists (fun date -> date >= event.StartDate && date <= event.EndDate)
                             then " highlight" else  ""
-                        div [ ClassName $"event {event.EventType}{highlight}"; OnMouseOver (fun _ -> event |> eventDates |> Set |> HoverDates |> dispatch) ] [
+                        div [ ClassName $"event {event.EventType}{highlight}"; OnMouseOver (fun _ -> event |> eventDates |> Set |> HighlightDates |> dispatch) ] [
                             div [ ClassName "date" ] [ str $"{eventDate event}" ]
                             div [ ClassName "description" ] [ str event.Description ]
                         ]
                 ]
         ]
+        div [ ClassName "footer" ] [
+            a [ Href "https://github.com/0101/ipwt" ] [ str "source" ]
+            str "|"
+            a [ Href "https://github.com/0101/ipwt/issues" ] [ str "report bug" ]
+        ]
     ]
-    

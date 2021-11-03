@@ -18,6 +18,13 @@ let isMondayTuesdayWednesday (date: DateTime) = date.DayOfWeek = DayOfWeek.Monda
                                                 date.DayOfWeek = DayOfWeek.Tuesday ||
                                                 date.DayOfWeek = DayOfWeek.Wednesday 
 
+let getMonthDates (month: DateTime) =
+    let firstDay = DateTime(month.Year, month.Month, 1)
+    Seq.initInfinite (float >> firstDay.AddDays)
+    |> Seq.takeWhile (fun x -> x.Month = firstDay.Month)
+    |> Seq.toList
+
+
 let dayOn date = { Date = date
                    DayType = DayOn
                    Description = None }
@@ -27,12 +34,18 @@ let dayOff date = { Date = date
                     Description = None }
 
 let partialDay date hours =
-    let percentage = hours / 8M
+    let dayType = PartialDay hours
     { Date = date
-      DayType = PartialDay percentage
-      Description = Some $"Partial day - %.1f{hours} hours" }
-    
-    
+      DayType = dayType
+      Description = Some dayType.DisplayText }
+
+let dayToEvent (d: Day) = {
+    StartDate = d.Date
+    EndDate = d.Date
+    Description = d.Description |> Or ""
+    EventType = d.DayType }
+
+
 let dayStatus = function
     | DayOn -> "Yep"
     | PartialDay _ -> "Kinda"
@@ -44,4 +57,3 @@ module Events =
     let on year month day = DateTime(year, month, day), DateTime(year, month, day) 
     let from year month day = DateTime(year, month, day)
     let to' = from
-    

@@ -12,7 +12,8 @@ let DAILY_HOURS = 8M
 let PART_TIME_DAILY_HOURS = PART_TIME_RATIO * DAILY_HOURS
 
 
-let eventDates event = [for x in [0..(event.EndDate - event.StartDate).Days] -> event.StartDate.AddDays(float x).Date]    
+let eventDates event = [for x in [0..(event.EndDate - event.StartDate).Days] -> event.StartDate.AddDays(float x).Date]
+                       |> List.filter isWeekDay
 
 
 let getEventsFor (month: DateTime) (holidays: Map<int, Event list>) =
@@ -27,7 +28,9 @@ let getEventsFor (month: DateTime) (holidays: Map<int, Event list>) =
                            e.EndDate.Year = month.Year && e.EndDate.Month = month.Month)
     |> Seq.toList
     
-
+    
+/// After known events are placed in the calendar, allocate the remaining working
+/// hours to the remaining free space
 module AllocationPolicy =
 
     /// Allocates all the part-time working hours to the beginning of the month     
@@ -48,6 +51,8 @@ module AllocationPolicy =
 
     /// Allocates the part-time working hours to Monday through Wednesday as much as possible
     /// What doesn't fit goes to the beginning of the month
+    /// 
+    /// Unused at the moment, just an example of different policy
     let ThreeDaysAWeek remainingHours remainingDates =
         let hoursLeft, days, remainingDates =
             ((remainingHours, [], remainingDates), remainingDates)
@@ -66,20 +71,15 @@ module AllocationPolicy =
     
 let initMonth holidays (month: DateTime) =
     let events = getEventsFor month holidays 
-    let firstDay = DateTime(month.Year, month.Month, 1)
-    let dates =
-        Seq.initInfinite (float >> firstDay.AddDays)
-        |> Seq.takeWhile (fun x -> x.Month = firstDay.Month)
-        |> Seq.toList
+    let dates = getMonthDates month
     
     let weekdays = dates |> Seq.where isWeekDay |> Seq.length
-    
     let workingHours = (decimal weekdays) * DAILY_HOURS
     let partTimeHours = workingHours * PART_TIME_RATIO
     
     let eventDates = [for event in events do
                       for date in eventDates event do
-                          if date.Month = month.Month then 
+                          if date.Month = month.Month then
                               date, event]
     
     // Events that reduce the number of working days
@@ -109,30 +109,24 @@ let initMonth holidays (month: DateTime) =
     // Allocate working days to the remaining space according to chosen policy    
     let regularDays = AllocationPolicy.BeginningOfMonth remainingHours remainingDates
 
-    // Add naturally occuring partial days to events list
+    // Add naturally occuring partial day(s) to events list
     let regularPartialDays = regularDays |> List.choose (function
-        | { DayType = PartialDay _ } as d -> Some {
-            StartDate = d.Date
-            EndDate = d.Date
-            Description = d.Description |> Or "Partial day"
-            EventType = d.DayType }
+        | { DayType = PartialDay _ } as d -> d |> dayToEvent |> Some
         | _ -> None)
     
-    let events = [yield! events
-                  yield! regularPartialDays]
+    let events = events @ regularPartialDays
     
-    let allDays = [yield! eventDays
-                   yield! regularDays] 
+    let allDays = eventDays @ regularDays 
     
     // Check that allocated working hours add up to expected number
-    let checksum = allDays
-                   |> List.sumBy (function | { DayType = DayOn } -> DAILY_HOURS
-                                           | { DayType = PartialDay percentage } ->
-                                               percentage * DAILY_HOURS
-                                           | _ -> 0M)
+    let checksum =
+        allDays
+        |> List.sumBy (function | { DayType = DayOn } -> DAILY_HOURS
+                                | { DayType = PartialDay hours } -> hours
+                                | _ -> 0M)
     Debug.Assert((checksum = decimal workingDays * DAILY_HOURS * PART_TIME_RATIO), $"Checksum failed for {month}!")
     
-    { Date = firstDay
+    { Date = month
       Days = allDays |> List.sortBy (fun d -> d.Date)
       Events = events |> List.sortBy (fun e -> e.StartDate)
       Weekdays = weekdays

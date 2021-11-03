@@ -15,6 +15,7 @@ type DayType =
             | PublicHoliday -> "Public holiday"
             | SickDay -> "Sick day"
             | DayOff -> "Day off"
+            | PartialDay hours -> $"Partial day – %.1f{hours} hours"
             | x -> x.ToString()
 
 type Day = {
@@ -55,4 +56,4 @@ type HolidayData = Fable.JsonProvider.Generator<holidaySampleFile>
 type Msg =
     | SwitchTo of DateTime
     | Holidays of int * Event list
-    | HoverDates of Set<DateTime>
+    | HighlightDates of Set<DateTime>
