@@ -1,6 +1,7 @@
 module App.Events
 
 open App.Utils.Events
+open App.AllocationPolicy
 
 
 let EVENTS = [
@@ -9,4 +10,8 @@ let EVENTS = [
     on 2021 8 4, DayOff, ""
     on 2021 11 30, PartialDay 4.8m, ""
     (from 2021 12 13, to' 2021 12 23), Vacation, ""
+]
+
+let ALLOCATION_POLICY = [
+    from 2022 1 1, AllocationPolicy.ThreeDaysAWeek
 ]

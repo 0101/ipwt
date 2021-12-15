@@ -91,7 +91,7 @@ let view (state : State) dispatch =
     let activeCalendar = calendar' true
     let passiveCalendar = calendar' false
     
-    div [ ClassName "page-wrapper"; OnKeyPress (fun e -> Console.info e.key) ] [
+    div [ ClassName "page-wrapper" ] [
         div [ ClassName "status-section" ] [
             h2 [] [ str "Is Petr working today?" ]
             h1 [] [ str state.TodayStatus ]
