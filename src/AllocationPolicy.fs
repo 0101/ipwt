@@ -25,8 +25,6 @@ module AllocationPolicy =
 
     /// Allocates the part-time working hours to Monday through Wednesday as much as possible
     /// What doesn't fit goes to the beginning of the month
-    ///
-    /// Unused at the moment, just an example of different policy
     let ThreeDaysAWeek remainingHours remainingDates =
         let hoursLeft, days, remainingDates =
             ((remainingHours, [], remainingDates), remainingDates)
