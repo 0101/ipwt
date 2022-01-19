@@ -12,6 +12,7 @@ let EVENTS = [
     (from 2021 12 13, to' 2021 12 23), Vacation, ""
     on 2022 1 13, PartialDay 4.8m, ""
     on 2022 1 18, SickDay, ""
+    on 2022 1 19, SickDay, ""
 ]
 
 let ALLOCATION_POLICY = [
