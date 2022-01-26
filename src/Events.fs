@@ -13,6 +13,9 @@ let EVENTS = [
     on 2022 1 13, PartialDay 4.8m, ""
     on 2022 1 18, SickDay, ""
     on 2022 1 19, SickDay, ""
+    on 2022 1 26, Vacation, ""
+    on 2022 1 27, Vacation, ""
+    on 2022 1 31, Vacation, ""
 ]
 
 let ALLOCATION_POLICY = [
