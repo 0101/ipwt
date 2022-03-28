@@ -16,6 +16,10 @@ let EVENTS = [
     on 2022 1 26, Vacation, ""
     on 2022 1 27, Vacation, ""
     on 2022 1 31, Vacation, ""
+    on 2022 4 7, Vacation, ""
+    (from 2022 4 19, to' 2022 4 21), Vacation, ""
+    (from 2022 4 22, to' 2022 5 10), DayOff, "Trip to US"
+    (from 2022 5 11, to' 2022 5 16), Vacation, ""
 ]
 
 let ALLOCATION_POLICY = [
