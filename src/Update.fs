@@ -13,7 +13,7 @@ let update (msg: Msg) (state: State) =
         let todayStatus =
             if state.TodayStatus = "" then
                 let thisMonth = initMonth state.Holidays state.Today
-                let today = thisMonth.Days |> List.find (fun x -> x.Date = state.Today)
+                let today = thisMonth.Days |> List.find (fun x -> x.Date.Date = state.Today.Date)
                 dayStatus today.DayType
             else state.TodayStatus
         
